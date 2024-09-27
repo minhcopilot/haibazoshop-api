@@ -15,31 +15,28 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateProductRequest {
-    @NotBlank(message = "Name can't be empty")
-            @Size(min = 3, max = 255, message = "Name must be between 3 and 255 characters")
+public class UpdateProductRequest {
+    @Size(min = 3, max = 255, message = "Name must be between 3 and 255 characters")
+            @NotBlank(message = "Name can't be empty")
     String name;
 
     @NotBlank(message = "Description can't be empty")
-            @Size(min = 3, message = "Description must be at least 3 characters")
+    @Size(min = 3, message = "Description must be at least 3 characters")
     String description;
 
-    @NotNull(message = "Price can't be null")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
     BigDecimal price;
 
     @NotBlank(message = "Style can't be empty")
-            @Size(min = 3, message = "Style must be at least 3 characters")
+    @Size(min = 3, message = "Style must be at least 3 characters")
     String style;
-    @NotEmpty(message = "Images can't be empty")
-    List<MultipartFile> images;
 
+    @NotEmpty(message = "Images can't be empty")
+    List<MultipartFile> newImages;
     @NotNull(message = "Category ID can't be null")
     Long categoryId;
-
     @NotEmpty(message = "Color IDs can't be empty")
     Set<Long> colorIds;
-
     @NotEmpty(message = "Size IDs can't be empty")
     Set<Long> sizeIds;
 }

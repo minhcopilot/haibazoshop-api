@@ -26,7 +26,8 @@ public class Product {
     private String description;
     private String style;
     private int views;
-
+    @Column(nullable = false)
+    private boolean isDeleted = false;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
