@@ -26,10 +26,11 @@ public class UpdateProductRequest {
 
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
     BigDecimal price;
+    @DecimalMin(value = "0.0", inclusive = false, message = "originalPrice must be greater than zero")
+    BigDecimal originalPrice;
+    @NotNull(message = "Style ID can't be null")
+    Long styleId;
 
-    @NotBlank(message = "Style can't be empty")
-    @Size(min = 3, message = "Style must be at least 3 characters")
-    String style;
 
     @NotEmpty(message = "Images can't be empty")
     List<MultipartFile> newImages;

@@ -6,10 +6,7 @@ import com.example.haibazoshop.dto.response.*;
 import com.example.haibazoshop.entity.*;
 import com.example.haibazoshop.exception.AppException;
 import com.example.haibazoshop.exception.ErrorCode;
-import com.example.haibazoshop.repository.CategoryRepository;
-import com.example.haibazoshop.repository.ColorRepository;
-import com.example.haibazoshop.repository.ProductRepository;
-import com.example.haibazoshop.repository.SizeRepository;
+import com.example.haibazoshop.repository.*;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +32,7 @@ public class ProductService{
     ColorRepository colorRepository;
     CategoryRepository categoryRepository;
     CloudinaryService cloudinaryService;
+    StyleRepository styleRepository;
 
     @Transactional
     public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
@@ -55,9 +53,14 @@ public class ProductService{
         if (request.getPrice() != null) {
             product.setPrice(request.getPrice());
         }
+        if (request.getOriginalPrice() != null) {
+            product.setOriginalPrice(request.getOriginalPrice());
+        }
 
-        if (request.getStyle() != null) {
-            product.setStyle(request.getStyle());
+        if (request.getStyleId() != null) {
+            Style style = styleRepository.findById(request.getStyleId())
+                    .orElseThrow(() -> new AppException(ErrorCode.STYLE_NOT_FOUND));
+            product.setStyle(style);
         }
 
         if (request.getCategoryId() != null) {
@@ -121,6 +124,8 @@ public class ProductService{
         }
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        Style style = styleRepository.findById(request.getStyleId())
+                .orElseThrow(() -> new AppException(ErrorCode.STYLE_NOT_FOUND));
         Set<Color> colors = new HashSet<>();
         for (Long colorId : request.getColorIds()) {
             Color color = colorRepository.findById(colorId)
@@ -137,7 +142,9 @@ public class ProductService{
                 .name(request.getName())
                 .description(request.getDescription())
                 .price(request.getPrice())
-                .style(request.getStyle())
+                .originalPrice(request.getOriginalPrice())
+                .views(0)
+                .style(style)
                 .category(category)
                 .colors(colors)
                 .sizes(sizes)
@@ -165,6 +172,7 @@ public class ProductService{
                 .map(this::mapToProductResponse);
     }
 
+
     @Transactional(readOnly = true)
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findByIdAndIsDeletedFalse(id)
@@ -190,12 +198,19 @@ public class ProductService{
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
-                .style(product.getStyle())
+                .originalPrice(product.getOriginalPrice())
                 .views(product.getViews())
                 .category(mapToCategoryResponse(product.getCategory()))
+                .style(mapToStyleResponse(product.getStyle()))
                 .colors(product.getColors().stream().map(this::mapToColorResponse).collect(Collectors.toSet()))
                 .sizes(product.getSizes().stream().map(this::mapToSizeResponse).collect(Collectors.toSet()))
                 .images(product.getImages().stream().map(this::mapToImageResponse).collect(Collectors.toList()))
+                .build();
+    }
+    private StyleResponse mapToStyleResponse(Style style) {
+        return StyleResponse.builder()
+                .id(style.getId())
+                .name(style.getName())
                 .build();
     }
     private CategoryResponse mapToCategoryResponse(Category category) {

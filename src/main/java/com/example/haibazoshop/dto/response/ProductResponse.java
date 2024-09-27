@@ -18,7 +18,8 @@ public class ProductResponse {
     String name;
     String description;
     BigDecimal price;
-    String style;
+    BigDecimal originalPrice;
+    StyleResponse style;
     int views;
     CategoryResponse category;
     Set<ColorResponse> colors;

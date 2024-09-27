@@ -23,8 +23,8 @@ public class Product {
 
     private String name;
     private BigDecimal price;
+    private BigDecimal originalPrice;
     private String description;
-    private String style;
     private int views;
     @Column(nullable = false)
     private boolean isDeleted = false;
@@ -53,4 +53,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Review> reviews;
+    @ManyToOne
+    @JoinColumn(name = "style_id")
+    private Style style;
 }
